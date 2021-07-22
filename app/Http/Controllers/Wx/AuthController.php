@@ -21,7 +21,7 @@ class AuthController extends Controller
         $code = $request->input('code');
 
         //  验证参数是否为空
-        if (empty($username) || empty($password) || empty($mobile) || $code) {
+        if (empty($username) || empty($password) || empty($mobile) || empty($code)) {
             return ['errno' => 401, 'errmsg' => '参数不对'];
         }
 
@@ -31,7 +31,7 @@ class AuthController extends Controller
             return ['errno' => 704, 'errmsg' => '用户已存在'];
         }
 
-        $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$']);
+        $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$/']);
         if ($validator->fails()) {
             return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
         }
@@ -55,7 +55,7 @@ class AuthController extends Controller
         // todo 新用户发券
         // todo 返回用户信息和token
         return [
-            'errno ' => 0, 'errmsg' => '成功',
+            'errno' => 0, 'errmsg' => '成功',
             'token' => '',
             'userInfo' => [
                 'nickname' => $username,
