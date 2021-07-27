@@ -10,7 +10,8 @@
         "production": "mix --production",
         "up": "cd ./laradock && docker-compose up -d nginx mysql redis",
         "down": "cd ./laradock && docker-compose down",
-        "up-w": "cd ./laradock && docker-compose up -d workspace"
+        "up-w": "cd ./laradock && docker-compose up -d workspace",
+        "bash": "cd ./laradock && docker-compose exec workspace bash"
     },
     "devDependencies": {
         "axios": "^0.21",

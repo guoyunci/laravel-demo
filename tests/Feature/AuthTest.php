@@ -38,13 +38,25 @@ class AuthTest extends TestCase
     public function test_register_mobile()
     {
         $response = $this->post('wx/auth/register', [
-            'username' => 'test10',
+            'username' => 'test20',
             'password' => '123456',
-            'mobile' => '131111111181',
+            'mobile' => '12343212345',
             'code' => '1234'
         ]);
         $response->assertStatus(200);
         $ret = $response->getOriginalContent();
         $this->assertEquals(707, $ret['errno']);
+    }
+
+    public function test_reg_captcha()
+    {
+        $response = $this->post('wx/auth/regCaptcha', [
+            'mobile' => '13222223232',
+        ]);
+        $response->assertJson(['errno' => 0, 'errmsg' => '成功']);
+        $response = $this->post('wx/auth/regCaptcha', [
+            'mobile' => '13222223232',
+        ]);
+        $response->assertJson(['errno' => 702, 'errmsg' => '验证码未超过1分钟, 不能发送']);
     }
 }
