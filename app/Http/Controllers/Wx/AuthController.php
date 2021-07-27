@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Wx;
 
-use App\Http\Controllers\Controller;
+use App\CodeResponse;
 use App\Models\User;
 use App\Services\UserServices;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class AuthController extends Controller
+class AuthController extends WxController
 {
+    /**
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function register(Request $request)
     {
         // 获取参数
@@ -23,29 +28,29 @@ class AuthController extends Controller
 
         //  验证参数是否为空
         if (empty($username) || empty($password) || empty($mobile) || empty($code)) {
-            return ['errno' => 401, 'errmsg' => '参数不对'];
+            return $this->fail(401, '参数不对');
         }
 
         //  验证用户是否存在
         $user = (new UserServices())->getByUsername($username);
         if (!is_null($user)) {
-            return ['errno' => 704, 'errmsg' => '用户已存在'];
+            return $this->fail(CodeResponse::USER_RREGISTERED);
         }
 
         $validator = Validator::make(['mobile' => $mobile], ['mobile' => 'regex:/^1[0-9]{10}$/']);
         if ($validator->fails()) {
-            return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
+            return $this->fail(707, '手机号格式不正确');
         }
         $user = (new UserServices())->getByMobile($mobile);
         if (!is_null($user)) {
-            return ['errno' => 705, 'errmsg' => '手机号已注册'];
+            return $this->fail(705, '手机号已注册');
         }
 
 
         // 验证验证码是否正确
         $isPass = (new UserServices())->checkCaptcha($mobile, $code);
         if (!$isPass) {
-            return ['errno' => 703, 'errmsg' => '验证码错误'];
+            return $this->fail(703, '验证码错误');
         }
         // 写入用户表
         $user = new User();
@@ -59,14 +64,13 @@ class AuthController extends Controller
         $user->save();
         // todo 新用户发券
         // todo 返回用户信息和token
-        return [
-            'errno' => 0, 'errmsg' => '成功',
+        return $this->success([
             'token' => '',
             'userInfo' => [
                 'nickname' => $username,
                 'avatar' => ''
             ]
-        ];
+        ]);
     }
 
     public function regCaptcha(Request $request)
@@ -90,11 +94,11 @@ class AuthController extends Controller
         // 防刷验证 一分钟只能请求一次 当天只能请求10次
         $lock = Cache::add('registet_captcha_lock', 1, 60);
         if (!$lock) {
-            return ['errno' => 702, 'errmsg' => '验证码未超过1分钟, 不能发送'];
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
         }
         $isPass = (new UserServices())->checkMobileSendCaptchaCount($mobile);
         if (!$isPass) {
-            return ['errno' => 702, 'errmsg' => '验证码当天发送不能超过10次'];
+            return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY, '验证码当天发送不能超过10次');
         }
         // 保存手机号和验证码的关系
         // 随机生成6位验证码
