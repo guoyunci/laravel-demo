@@ -22,6 +22,20 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_register_errcode()
+    {
+        $response = $this->post('wx/auth/register', [
+            'username' => 'test10',
+            'password' => '123456',
+            'mobile' => '13111111101',
+            'code' => '123'
+        ]);
+        $response->assertJson([
+            'errno' => 702,
+            'errmsg' => '验证码未超过1分钟, 不能发送'
+        ]);
+    }
+
     public function test_register()
     {
         $code = (new UserServices())->setCaptcha('13111111101');

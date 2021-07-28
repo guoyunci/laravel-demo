@@ -3,7 +3,6 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +12,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        BusinessException::class
     ];
 
     /**
@@ -34,8 +33,11 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (BusinessException $e, $request) {
+            return response()->json([
+                'errno' => $e->getCode(),
+                'errmsg' => $e->getMessage()
+            ]);
         });
     }
 }

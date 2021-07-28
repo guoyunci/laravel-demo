@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\CodeResponse;
+use App\Exceptions\BusinessException;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -63,6 +65,7 @@ class UserServices
      * @param  string  $mobile
      * @param  string  $code
      * @return bool
+     * @throws BusinessException
      */
     public function checkCaptcha(string $mobile, string $code)
     {
@@ -70,8 +73,10 @@ class UserServices
         $isPass = $code === Cache::get($key);
         if ($isPass) {
             Cache::forget($key);
+            return true;
+        } else {
+            throw new BusinessException(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
         }
-        return $isPass;
     }
 
     /**
