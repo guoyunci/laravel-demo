@@ -25,23 +25,23 @@ class AuthTest extends TestCase
     {
         $mobile = '12311111111';
         foreach (range(0, 9) as $i) {
-            $isPass = (new UserServices())->checkMobileSendCaptchaCount($mobile);
+            $isPass = UserServices::getInstance()->checkMobileSendCaptchaCount($mobile);
             $this->assertTrue($isPass);
         }
-        $isPass = (new UserServices())->checkMobileSendCaptchaCount($mobile);
+        $isPass = UserServices::getInstance()->checkMobileSendCaptchaCount($mobile);
         $this->assertFalse($isPass);
     }
 
     public function testCheckCaptcha()
     {
         $mobile = '12311111111';
-        $code = (new UserServices())->setCaptcha($mobile);
-        $isPass = (new UserServices())->checkCaptcha($mobile, $code);
+        $code = UserServices::getInstance()->setCaptcha($mobile);
+        $isPass = UserServices::getInstance()->checkCaptcha($mobile, $code);
         $this->assertTrue($isPass);
 
         // $this->expectException(BusinessException::class);
         // $this->expectExceptionCode(702);
         $this->expectExceptionObject(new BusinessException(CodeResponse::AUTH_CAPTCHA_FREQUENCY));
-        (new UserServices())->checkCaptcha($mobile, $code);
+        UserServices::getInstance()->checkCaptcha($mobile, $code);
     }
 }

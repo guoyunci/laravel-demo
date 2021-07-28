@@ -9,8 +9,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
-class UserServices
+class UserServices extends BaseServices
 {
+
     /**
      * @param $username
      * @return User|null|Model

@@ -38,7 +38,7 @@ class AuthTest extends TestCase
 
     public function test_register()
     {
-        $code = (new UserServices())->setCaptcha('13111111101');
+        $code = UserServices::getInstance()->setCaptcha('13111111101');
         $response = $this->post('wx/auth/register', [
             'username' => 'test10',
             'password' => '123456',
@@ -61,7 +61,7 @@ class AuthTest extends TestCase
         ]);
         $response->assertStatus(200);
         $ret = $response->getOriginalContent();
-        $this->assertEquals(707, $ret['errno']);
+        $this->assertEquals(702, $ret['errno']);
     }
 
     public function test_reg_captcha()

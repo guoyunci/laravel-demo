@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends WxController
 {
+
     /**
      * @param  Request  $request
      * @return JsonResponse
@@ -32,7 +33,7 @@ class AuthController extends WxController
         }
 
         //  验证用户是否存在
-        $user = (new UserServices())->getByUsername($username);
+        $user = UserServices::getInstance()->getByUsername($username);
         if (!is_null($user)) {
             return $this->fail(CodeResponse::USER_RREGISTERED);
         }
@@ -41,14 +42,14 @@ class AuthController extends WxController
         if ($validator->fails()) {
             return $this->fail(707, '手机号格式不正确');
         }
-        $user = (new UserServices())->getByMobile($mobile);
+        $user = UserServices::getInstance()->getByMobile($mobile);
         if (!is_null($user)) {
             return $this->fail(705, '手机号已注册');
         }
 
 
         // 验证验证码是否正确
-        $isPass = (new UserServices())->checkCaptcha($mobile, $code);
+        $isPass = UserServices::getInstance()->checkCaptcha($mobile, $code);
         if (!$isPass) {
             return $this->fail(703, '验证码错误');
         }
@@ -87,7 +88,7 @@ class AuthController extends WxController
             return ['errno' => 707, 'errmsg' => '手机号格式不正确'];
         }
         // 验证手机号是否已经被注册
-        $user = (new UserServices())->getByMobile($mobile);
+        $user = UserServices::getInstance()->getByMobile($mobile);
         if (!is_null($user)) {
             return ['errno' => 705, 'errmsg' => '手机号已注册'];
         }
@@ -96,15 +97,15 @@ class AuthController extends WxController
         if (!$lock) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
         }
-        $isPass = (new UserServices())->checkMobileSendCaptchaCount($mobile);
+        $isPass = UserServices::getInstance()->checkMobileSendCaptchaCount($mobile);
         if (!$isPass) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY, '验证码当天发送不能超过10次');
         }
         // 保存手机号和验证码的关系
         // 随机生成6位验证码
-        $code = (new UserServices())->setCaptcha($mobile);
+        $code = UserServices::getInstance()->setCaptcha($mobile);
         // 发送短信 
-        (new UserServices())->sendCaptchaMsg($mobile, $code);
+        UserServices::getInstance()->sendCaptchaMsg($mobile, $code);
         return ['errno' => 0, 'errmsg' => '成功', 'data' => null];
     }
 }
