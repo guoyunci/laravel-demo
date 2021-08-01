@@ -6,6 +6,8 @@ use App\CodeResponse;
 use App\Exceptions\BusinessException;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
@@ -14,7 +16,7 @@ class UserServices extends BaseServices
 
     /**
      * @param $username
-     * @return User|null|Model
+     * @return Builder|Model|object|null
      */
     public function getByUsername($username)
     {
@@ -23,7 +25,7 @@ class UserServices extends BaseServices
 
     /**
      * @param $mobile
-     * @return Model|null|Model
+     * @return Builder|Model|object|null
      */
     public function getByMobile($mobile)
     {
@@ -31,11 +33,10 @@ class UserServices extends BaseServices
     }
 
     /**
-     * 验证手机号发送验证码是否达到限制条数
      * @param  string  $mobile
      * @return bool
      */
-    public function checkMobileSendCaptchaCount(string $mobile)
+    public function checkMobileSendCaptchaCount(string $mobile): bool
     {
         $countKey = 'register_captcha_count_'.$mobile;
         if (Cache::has($countKey)) {
@@ -51,26 +52,23 @@ class UserServices extends BaseServices
 
     /**
      * 发送验证码
-     * @param  string  $mobile
-     * @param  string  $code
      */
-    public function sendCaptchaMsg(string $mobile, string $code)
+    public function sendCaptchaMsg()
     {
-        if (app()->environment('testing')) {
-            return;
-        }
+        // if (app()->environment('testing')) {
+        //     return;
+        // }
     }
 
     /**
-     * 验证短信验证码
      * @param  string  $mobile
      * @param  string  $code
      * @return bool
      * @throws BusinessException
      */
-    public function checkCaptcha(string $mobile, string $code)
+    public function checkCaptcha(string $mobile, string $code): bool
     {
-        $key = 'registe_captcha_'.$mobile;
+        $key = 'register_captcha_'.$mobile;
         $isPass = $code === Cache::get($key);
         if ($isPass) {
             Cache::forget($key);
@@ -83,15 +81,15 @@ class UserServices extends BaseServices
     /**
      * @param  string  $mobile
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setCaptcha(string $mobile)
+    public function setCaptcha(string $mobile): string
     {
         // 保存手机号和验证码的关系
         // 随机生成6位验证码
         $code = random_int(100000, 999999);
         $code = strval($code);
-        Cache::put('registe_captcha_'.$mobile, $code, 600);
+        Cache::put('register_captcha_'.$mobile, $code, 600);
         return $code;
     }
 }
