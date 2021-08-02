@@ -41,4 +41,12 @@ class WxController extends Controller
     {
         return $this->codeReturn($codeResponse, null, $info);
     }
+
+    public function failOrSuccess($isSuccess, array $codeResponse = CodeResponse::FAIL, $data = null, $info = '')
+    {
+        if ($isSuccess) {
+            return $this->success();
+        }
+        return $this->fail($codeResponse, $info);
+    }
 }

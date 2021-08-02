@@ -26,6 +26,12 @@ class AuthController extends WxController
         return $this->success($user);
     }
 
+    public function logout()
+    {
+        Auth::guard('wx')->logout();
+        return $this->success();
+    }
+
     public function login(Request $request): JsonResponse
     {
         //获取账号密码
