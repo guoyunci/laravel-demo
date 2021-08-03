@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -33,11 +35,24 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->renderable(function (BusinessException $e, $request) {
+        $this->renderable(function (BusinessException $e) {
             return response()->json([
                 'errno' => $e->getCode(),
                 'errmsg' => $e->getMessage()
             ]);
         });
+
+        $this->renderable(function (Throwable $e) {
+            return response()->json([
+                'errno' => 500,
+                'errmsg' => '服务器错误'
+            ]);
+        });
+
+        $this->reportable(function (Throwable $e) {
+            app(LoggerInterface::class)->error(
+                $e->getMessage()." at ".$e->getFile().":".$e->getLine(),
+            );
+        })->stop();
     }
 }
