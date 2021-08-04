@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\CodeResponse;
 use App\Exceptions\BusinessException;
-use App\Services\UserServices;
+use App\Services\User\UserServices;
 use Tests\TestCase;
 
 //防止门面调用不通

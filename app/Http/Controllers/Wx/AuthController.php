@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Exceptions\BusinessException;
-use App\Models\User;
-use App\Services\UserServices;
+use App\Models\User\User;
+use App\Services\User\UserServices;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;

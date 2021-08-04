@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Services\UserServices;
+use App\Services\User\UserServices;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -92,7 +92,7 @@ class AuthTest extends TestCase
                 ]
             ]
         ]);
-        echo $response->getOriginalContent()['data']['token'] ?? '';
+        // echo $response->getOriginalContent()['data']['token'] ?? '';
         $this->assertNotEmpty($response->getOriginalContent()['data']['token'] ?? '');
     }
 

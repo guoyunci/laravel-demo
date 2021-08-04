@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\User;
 
 use App\CodeResponse;
 use App\Exceptions\BusinessException;
-use App\Models\User;
+use App\Models\User\User;
+use App\Services\BaseServices;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
