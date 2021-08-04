@@ -1,9 +1,11 @@
 <?php
+/** @noinspection ALL */
 
 namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class WxController extends Controller
 {
@@ -22,7 +24,7 @@ class WxController extends Controller
         $this->middleware('auth:wx', $option);
     }
 
-    protected function codeReturn(array $codeResponse, $data = null, $info = '')
+    protected function codeReturn(array $codeResponse, $data = null, $info = ''): JsonResponse
     {
         [$errno, $errmsg] = $codeResponse;
         $ret = ['errno' => $errno, 'errmsg' => $info ?: $errmsg];
@@ -32,18 +34,22 @@ class WxController extends Controller
         return response()->json($ret);
     }
 
-    protected function success($data = null)
+    protected function success($data = null): JsonResponse
     {
         return $this->codeReturn(CodeResponse::SUCCESS, $data);
     }
 
-    public function fail(array $codeResponse = CodeResponse::FAIL, $info = '')
+    public function fail(array $codeResponse = CodeResponse::FAIL, $info = ''): JsonResponse
     {
         return $this->codeReturn($codeResponse, null, $info);
     }
 
-    public function failOrSuccess($isSuccess, array $codeResponse = CodeResponse::FAIL, $data = null, $info = '')
-    {
+    public function failOrSuccess(
+        $isSuccess,
+        array $codeResponse = CodeResponse::FAIL,
+        $data = null,
+        $info = ''
+    ): JsonResponse {
         if ($isSuccess) {
             return $this->success();
         }

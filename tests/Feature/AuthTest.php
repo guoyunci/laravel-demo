@@ -98,12 +98,7 @@ class AuthTest extends TestCase
 
     public function test_user()
     {
-        $response = $this->post('wx/auth/login', [
-            'username' => 'user123',
-            'password' => 'user123'
-        ]);
-        $token = $response->getOriginalContent()['data']['token'] ?? '';
-        $response2 = $this->get('wx/auth/user', ['Authorization' => "Bearer {$token}"]);
-        $response2->assertJson(['data' => ['username' => 'user123']]);
+        $response = $this->get('wx/auth/user', $this->getAuthHeader());
+        $response->assertJson(['data' => ['username' => 'user123']]);
     }
 }

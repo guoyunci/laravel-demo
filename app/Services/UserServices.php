@@ -15,19 +15,19 @@ class UserServices extends BaseServices
 {
 
     /**
-     * @param $username
+     * @param  string  $username
      * @return Builder|Model|object|null
      */
-    public function getByUsername($username)
+    public function getByUsername(string $username)
     {
         return User::query()->where('username', $username)->where('deleted', 0)->first();
     }
 
     /**
-     * @param $mobile
+     * @param  string  $mobile
      * @return Builder|Model|object|null
      */
-    public function getByMobile($mobile)
+    public function getByMobile(string $mobile)
     {
         return User::query()->where('mobile', $mobile)->where('deleted', 0)->first();
     }
@@ -74,7 +74,7 @@ class UserServices extends BaseServices
             Cache::forget($key);
             return true;
         } else {
-            throw new BusinessException(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
+            $this->throwBusinessException(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
         }
     }
 
