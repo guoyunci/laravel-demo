@@ -13,9 +13,5 @@ class CatalogTest extends TestCase
     {
         $response = $this->get('wx/catalog/index');
         $response->assertJson(['errno' => 0]);
-        $response = $this->get('wx/catalog/index?id=1005000');
-        $response->assertJson(['errno' => 0]);
-        $response = $this->get('wx/catalog/index?id=10050001');
-        $response->assertJson(['errno' => 0]);
     }
 }
