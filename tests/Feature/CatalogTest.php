@@ -9,7 +9,7 @@ class CatalogTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function test_index()
+    public function testIndex()
     {
         $response = $this->get('wx/catalog/index');
         $response->assertJson(['errno' => 0]);
