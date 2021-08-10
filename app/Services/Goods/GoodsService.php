@@ -62,9 +62,9 @@ class GoodsService extends BaseServices
     public function listL2Category($brandId, $isNew, $isHot, $keyword)
     {
         $query = $this->getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword);
-        dd($query->toSql());
+        // dd($query->toSql());
         $categoryIds = $query->select(['category_id'])->pluck('category_id')->unique()->toArray();
-        dd($categoryIds);
+        // dd($categoryIds);
         return CatalogServices::getInstance()->getL2ListByIds($categoryIds);
     }
 }
