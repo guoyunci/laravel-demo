@@ -5,16 +5,19 @@ namespace App\Models\Goods;
 
 use App\Models\BaseModel;
 
-class Goods extends BaseModel
+class Footprint extends BaseModel
 {
-    protected $table = 'goods';
+    protected $table = 'footprint';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'user_id',
+        'goods_id'
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -31,11 +34,5 @@ class Goods extends BaseModel
      */
     protected $casts = [
         'deleted' => 'boolean',
-        'counter_price' => 'float',
-        'retail_price' => 'float',
-        'is_new' => 'boolean',
-        'is_hot' => 'boolean',
-        'gallery' => 'array',
-        'is_on_sale' => 'boolean',
     ];
 }

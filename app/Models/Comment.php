@@ -1,20 +1,18 @@
 <?php
 /** @noinspection ALL */
 
-namespace App\Models\Goods;
+namespace App\Models;
 
-use App\Models\BaseModel;
-
-class Goods extends BaseModel
+class Comment extends BaseModel
 {
-    protected $table = 'goods';
-
+    protected $table = 'comment';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -31,11 +29,6 @@ class Goods extends BaseModel
      */
     protected $casts = [
         'deleted' => 'boolean',
-        'counter_price' => 'float',
-        'retail_price' => 'float',
-        'is_new' => 'boolean',
-        'is_hot' => 'boolean',
-        'gallery' => 'array',
-        'is_on_sale' => 'boolean',
+        'pic_urls' => 'array'
     ];
 }

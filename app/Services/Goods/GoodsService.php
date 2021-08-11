@@ -2,13 +2,55 @@
 
 namespace App\Services\Goods;
 
+use App\Models\Goods\Footprint;
 use App\Models\Goods\Goods;
+use App\Models\Goods\GoodsAttribute;
+use App\Models\Goods\GoodsProduct;
+use App\Models\Goods\GoodsSpecification;
+use App\Models\Goods\Issue;
 use App\Services\BaseServices;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 class GoodsService extends BaseServices
 {
+    public function getGoods(int $id)
+    {
+        return Goods::query()->find($id);
+    }
+
+    public function getGoodsAttribute(int $goodsId)
+    {
+        return GoodsAttribute::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+    }
+
+    public function getGoodsSpecification(int $goodsId)
+    {
+        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->where(
+            'deleted',
+            0
+        )->get()->groupBy('specification');
+        return $spec->map(function ($v, $k) {
+            return ['name' => $k, 'valueList' => $v];
+        })->values();
+    }
+
+    public function getGoodsProduct(int $goodsId)
+    {
+        return GoodsProduct::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+    }
+
+    public function getGoodsIssue(int $page = 1, int $limit = 4)
+    {
+        return Issue::query()->forPage($page, $limit)->get();
+    }
+
+    public function saveFootprint($userId, $goodsId): bool
+    {
+        $footprint = new Footprint();
+        $footprint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
+        return $footprint->save();
+    }
 
     /**
      * 获取在售商品数量
