@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\CodeResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -39,6 +41,13 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'errno' => $e->getCode(),
                 'errmsg' => $e->getMessage()
+            ]);
+        });
+
+        $this->renderable(function (ValidationException $e) {
+            return response()->json([
+                'errno' => CodeResponse::PARAM_VALUE_ILLEGAL[0],
+                'errmsg' => CodeResponse::PARAM_VALUE_ILLEGAL[1]
             ]);
         });
 

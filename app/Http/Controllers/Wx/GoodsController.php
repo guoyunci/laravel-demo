@@ -58,13 +58,34 @@ class GoodsController extends WxController
 
     public function list(Request $request)
     {
-        $categoryId = $request->input('categoryId');
-        $brandId = $request->input('brandId');
-        $keyword = $request->input('keyword');
-        $isNew = $request->input('isNew');
-        $isHot = $request->input('isHot');
-        $page = $request->input('page', 1);
-        $limit = $request->input('limit', 10);
+        // $input = $request->validate(
+        //     [
+        //         'categoryId' => 'integer|digits_between:1,20',
+        //         'brandId' => 'integer|digits_between:1,20',
+        //         'keyword' => 'string',
+        //         'isNew' => 'boolean',
+        //         'isHot' => 'boolean',
+        //         'page' => 'integer',
+        //         'limit' => 'integer',
+        //         'sort' => Rule::in(['add_time', 'retail_price', 'name']),
+        //         'order' => Rule::in(['desc', 'asc']),
+        //     ]
+        // );
+
+        // $categoryId = $request->input('categoryId');
+        // $brandId = $request->input('brandId');
+        // $keyword = $request->input('keyword');
+        // $isNew = $request->input('isNew');
+        // $isHot = $request->input('isHot');
+        // $page = $request->input('page', 1);
+        // $limit = $request->input('limit', 10);
+        $categoryId = $this->verifyId('categoryId');
+        $brandId = $this->verifyId('brandId');
+        $keyword = $this->verifyString('keyword');
+        $isNew = $this->verifyBoolean('isNew');
+        $isHot = $this->verifyBoolean('isHot');
+        $page = $this->verifyInteger('page', 1);
+        $limit = $this->verifyInteger('limit', 10);
         $sort = $request->input('sort', 'add_time');
         $order = $request->input('order', 'desc');
 
