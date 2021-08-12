@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Wx;
+namespace App;
 
-use App\CodeResponse;
 use App\Exceptions\BusinessException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

@@ -2,6 +2,7 @@
 
 namespace App\Services\Goods;
 
+use App\Inputs\GoodsListInput;
 use App\Models\Goods\Footprint;
 use App\Models\Goods\Goods;
 use App\Models\Goods\GoodsAttribute;
@@ -61,52 +62,101 @@ class GoodsService extends BaseServices
         return Goods::query()->where('is_on_sale', 1)->where('deleted', 0)->count('id');
     }
 
-    public function listGoods(
-        $categoryId,
-        $brandId,
-        $isNew,
-        $isHot,
-        $keyword,
-        $sort = 'add_time',
-        $order = 'desc',
-        $page = 1,
-        $limit = 10
-    ): LengthAwarePaginator {
-        $query = $this->getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword);
-        if (!empty($categoryId)) {
-            $query = $query->where('category_id', $categoryId);
+    /**
+     * @param  GoodsListInput  $input
+     * @param $columns
+     * @return LengthAwarePaginator
+     */
+    public function listGoods(GoodsListInput $input, $columns): LengthAwarePaginator
+    {
+        $query = $this->getQueryByGoodsFilter($input);
+        if (!empty($input->categoryId)) {
+            $query = $query->where('category_id', $input->categoryId);
         }
-        return $query->orderBy($sort, $order)->paginate($limit, ['*'], 'page', $page);
+        return $query->orderBy($input->sort, $input->order)->paginate($input->limit, $columns, 'page', $input->page);
     }
 
-    private function getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword): Builder
+    // public function listGoods(
+    //     $categoryId,
+    //     $brandId,
+    //     $isNew,
+    //     $isHot,
+    //     $keyword,
+    //     $sort = 'add_time',
+    //     $order = 'desc',
+    //     $page = 1,
+    //     $limit = 10
+    // ): LengthAwarePaginator {
+    //     $query = $this->getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword);
+    //     if (!empty($categoryId)) {
+    //         $query = $query->where('category_id', $categoryId);
+    //     }
+    //     return $query->orderBy($sort, $order)->paginate($limit, ['*'], 'page', $page);
+    // }
+
+    /**
+     * @param  GoodsListInput  $input
+     * @return Builder
+     */
+    private function getQueryByGoodsFilter(GoodsListInput $input): Builder
     {
         $query = Goods::query()->where('is_on_sale', 1)
             ->where('deleted', 0);
-        if (!empty($brandId)) {
-            $query = $query->where('brand_id', $brandId);
+        if (!empty($input->brandId)) {
+            $query = $query->where('brand_id', $input->brandId);
         }
-        if (!is_null($isNew)) {
-            $query = $query->where('is_new', $isNew);
+        if (!is_null($input->isNew)) {
+            $query = $query->where('is_new', $input->isNew);
         }
-        if (!is_null($isHot)) {
-            $query = $query->where('is_hot', $isHot);
+        if (!is_null($input->isHot)) {
+            $query = $query->where('is_hot', $input->isHot);
         }
-        if (!empty($keyword)) {
-            $query = $query->where(function (Builder $query) use ($keyword) {
-                $query->where('keywords', 'like', "%$keyword%")
-                    ->orWhere('name', 'like', "%$keyword%");
+        if (!empty($input->keyword)) {
+            $query = $query->where(function (Builder $query) use ($input) {
+                $query->where('keywords', 'like', "%$input->keyword%")
+                    ->orWhere('name', 'like', "%$input->keyword%");
             });
         }
         return $query;
     }
 
-    public function listL2Category($brandId, $isNew, $isHot, $keyword)
+    // private function getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword): Builder
+    // {
+    //     $query = Goods::query()->where('is_on_sale', 1)
+    //         ->where('deleted', 0);
+    //     if (!empty($brandId)) {
+    //         $query = $query->where('brand_id', $brandId);
+    //     }
+    //     if (!is_null($isNew)) {
+    //         $query = $query->where('is_new', $isNew);
+    //     }
+    //     if (!is_null($isHot)) {
+    //         $query = $query->where('is_hot', $isHot);
+    //     }
+    //     if (!empty($keyword)) {
+    //         $query = $query->where(function (Builder $query) use ($keyword) {
+    //             $query->where('keywords', 'like', "%$keyword%")
+    //                 ->orWhere('name', 'like', "%$keyword%");
+    //         });
+    //     }
+    //     return $query;
+    // }
+
+    public function listL2Category(GoodsListInput $input)
     {
-        $query = $this->getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword);
+        $query = $this->getQueryByGoodsFilter($input);
         // dd($query->toSql());
         $categoryIds = $query->select(['category_id'])->pluck('category_id')->unique()->toArray();
         // dd($categoryIds);
         return CatalogServices::getInstance()->getL2ListByIds($categoryIds);
     }
+
+    // public function listL2Category($brandId, $isNew, $isHot, $keyword)
+    // {
+    //     $query = $this->getQueryByGoodsFilter($brandId, $isNew, $isHot, $keyword);
+    //     // dd($query->toSql());
+    //     $categoryIds = $query->select(['category_id'])->pluck('category_id')->unique()->toArray();
+    //     // dd($categoryIds);
+    //     return CatalogServices::getInstance()->getL2ListByIds($categoryIds);
+    // }
 }
