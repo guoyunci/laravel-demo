@@ -11,7 +11,6 @@ use App\Services\Goods\BrandServices;
 use App\Services\Goods\CatalogServices;
 use App\Services\Goods\GoodsService;
 use App\Services\SearchHistoryServices;
-use Illuminate\Http\Request;
 
 class GoodsController extends WxController
 {
@@ -26,13 +25,13 @@ class GoodsController extends WxController
         return $this->success($count);
     }
 
-    public function category(Request $request)
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\BusinessException
+     */
+    public function category()
     {
-        $id = $request->input('id', 0);
-        if (empty($id)) {
-            return $this->fail(CodeResponse::PARAM_ILLEGAL);
-        }
-
+        $id = $this->verifyId('id');
         $cur = CatalogServices::getInstance()->getCategoryById($id);
         if (empty($cur)) {
             return $this->fail(CodeResponse::PARAM_ILLEGAL);
@@ -56,29 +55,12 @@ class GoodsController extends WxController
         ]);
     }
 
-    public function list(Request $request)
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\BusinessException
+     */
+    public function list()
     {
-        // $input = $request->validate(
-        //     [
-        //         'categoryId' => 'integer|digits_between:1,20',
-        //         'brandId' => 'integer|digits_between:1,20',
-        //         'keyword' => 'string',
-        //         'isNew' => 'boolean',
-        //         'isHot' => 'boolean',
-        //         'page' => 'integer',
-        //         'limit' => 'integer',
-        //         'sort' => Rule::in(['add_time', 'retail_price', 'name']),
-        //         'order' => Rule::in(['desc', 'asc']),
-        //     ]
-        // );
-
-        // $categoryId = $request->input('categoryId');
-        // $brandId = $request->input('brandId');
-        // $keyword = $request->input('keyword');
-        // $isNew = $request->input('isNew');
-        // $isHot = $request->input('isHot');
-        // $page = $request->input('page', 1);
-        // $limit = $request->input('limit', 10);
         $categoryId = $this->verifyId('categoryId');
         $brandId = $this->verifyId('brandId');
         $keyword = $this->verifyString('keyword');
@@ -86,8 +68,8 @@ class GoodsController extends WxController
         $isHot = $this->verifyBoolean('isHot');
         $page = $this->verifyInteger('page', 1);
         $limit = $this->verifyInteger('limit', 10);
-        $sort = $request->input('sort', 'add_time');
-        $order = $request->input('order', 'desc');
+        $sort = $this->verifyEnum('sort', 'add_time', ['add_time', 'retail_price', 'name']);
+        $order = $this->verifyEnum('order', 'desc', ['desc', 'asc']);
 
         if ($this->isLogin() && !empty($keyword)) {
             SearchHistoryServices::getInstance()->save($this->userId(), $keyword, Constant::SEARCH_HISTORY_FROM_WX);
@@ -102,12 +84,13 @@ class GoodsController extends WxController
         return $this->success($goodsList);
     }
 
-    public function detail(Request $request)
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\BusinessException
+     */
+    public function detail()
     {
-        $id = $request->input('id');
-        if (empty($id)) {
-            return $this->fail(CodeResponse::PARAM_ILLEGAL);
-        }
+        $id = $this->verifyId('id');
         $info = GoodsService::getInstance()->getGoods($id);
         if (empty($info)) {
             return $this->fail(CodeResponse::PARAM_ILLEGAL);

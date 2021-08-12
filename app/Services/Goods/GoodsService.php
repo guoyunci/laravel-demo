@@ -86,10 +86,10 @@ class GoodsService extends BaseServices
         if (!empty($brandId)) {
             $query = $query->where('brand_id', $brandId);
         }
-        if (!empty($isNew)) {
+        if (!is_null($isNew)) {
             $query = $query->where('is_new', $isNew);
         }
-        if (!empty($isHot)) {
+        if (!is_null($isHot)) {
             $query = $query->where('is_hot', $isHot);
         }
         if (!empty($keyword)) {
