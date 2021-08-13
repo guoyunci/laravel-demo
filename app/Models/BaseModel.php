@@ -15,6 +15,9 @@ class BaseModel extends Model
     public function toArray()
     {
         $items = parent::toArray();
+        // $items = array_filter($items, function ($item) {
+        //     return !is_null($item);
+        // });
         $keys = array_keys($items);
         $keys = array_map(function ($key) {
             return lcfirst(Str::studly($key));

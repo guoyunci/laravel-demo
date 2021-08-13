@@ -29,9 +29,9 @@ class BaseServices
      * @param  array  $codeResponse
      * @throws BusinessException
      */
-    public function throwBusinessException(array $codeResponse)
+    public function throwBusinessException(array $codeResponse, $info = '')
     {
-        throw new BusinessException($codeResponse);
+        throw new BusinessException($codeResponse, $info);
     }
 
     private function __clone()
