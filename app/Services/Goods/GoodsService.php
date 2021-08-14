@@ -48,7 +48,7 @@ class GoodsService extends BaseServices
 
     public function saveFootprint($userId, $goodsId): bool
     {
-        $footprint = new Footprint();
+        $footprint = Footprint::new();
         $footprint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
         return $footprint->save();
     }

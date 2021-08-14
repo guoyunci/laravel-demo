@@ -1,13 +1,35 @@
 <?php
-/** @noinspection ALL */
 
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
+/**
+ * App\Models\Goods\Footprint
+ *
+ * @property int $id
+ * @property int $user_id 用户表的用户ID
+ * @property int $goods_id 浏览商品ID
+ * @property Carbon|null $add_time 创建时间
+ * @property Carbon|null $update_time 更新时间
+ * @property bool|null $deleted 逻辑删除
+ * @method static Builder|Footprint newModelQuery()
+ * @method static Builder|Footprint newQuery()
+ * @method static Builder|Footprint query()
+ * @method static Builder|Footprint whereAddTime($value)
+ * @method static Builder|Footprint whereDeleted($value)
+ * @method static Builder|Footprint whereGoodsId($value)
+ * @method static Builder|Footprint whereId($value)
+ * @method static Builder|Footprint whereUpdateTime($value)
+ * @method static Builder|Footprint whereUserId($value)
+ * @mixin Eloquent
+ */
 class Footprint extends BaseModel
 {
-    protected $table = 'footprint';
+    // protected $table = 'footprint';
 
     /**
      * The attributes that are mass assignable.
@@ -17,22 +39,5 @@ class Footprint extends BaseModel
     protected $fillable = [
         'user_id',
         'goods_id'
-    ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'deleted' => 'boolean',
     ];
 }

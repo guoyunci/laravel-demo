@@ -110,7 +110,8 @@ class AuthController extends WxController
             return $this->fail(CodeResponse::AUTH_CAPTCHA_UNMATCH);
         }
         // 写入用户表
-        $user = new User();
+        // $user = new User();
+        $user = User::new();
         $user->username = $username;
         $user->password = Hash::make($password);
         $user->mobile = $mobile;

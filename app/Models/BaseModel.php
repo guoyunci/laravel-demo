@@ -1,16 +1,41 @@
 <?php
-/** @noinspection ALL */
 
 namespace App\Models;
 
 use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * App\Models\BaseModel
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|BaseModel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|BaseModel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|BaseModel query()
+ * @mixin \Eloquent
+ */
 class BaseModel extends Model
 {
     public const CREATED_AT = 'add_time';
     public const UPDATED_AT = 'update_time';
+
+    public $defaultCasts = ['deleted' => 'boolean'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        parent::mergeCasts($this->defaultCasts);
+    }
+
+    /**
+     * @return static|BaseModel
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    public static function new()
+    {
+        return new static();
+    }
 
     public function toArray()
     {
@@ -26,8 +51,20 @@ class BaseModel extends Model
         return array_combine($keys, $values);
     }
 
-    public function serializeDate(\DateTimeInterface $date)
+    /**
+     * @param  DateTimeInterface  $date
+     * @return string
+     */
+    public function serializeDate(DateTimeInterface $date): string
     {
         return Carbon::instance($date)->toDateTimeString();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return $this->table ?? Str::snake(class_basename($this));
     }
 }

@@ -14,7 +14,7 @@ class SearchHistoryServices extends BaseServices
      */
     public function save($userId, $keyword, $from): SearchHistory
     {
-        $history = new SearchHistory();
+        $history = SearchHistory::new();
         $history->fill([
             'user_id' => $userId,
             'keyword' => $keyword,
