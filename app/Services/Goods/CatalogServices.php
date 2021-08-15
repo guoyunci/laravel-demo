@@ -15,7 +15,7 @@ class CatalogServices extends BaseServices
      */
     public function getL1List()
     {
-        return Category::query()->where('level', 'L1')->where('deleted', 0)->get();
+        return Category::query()->where('level', 'L1')->get();
     }
 
     /**
@@ -24,7 +24,7 @@ class CatalogServices extends BaseServices
      */
     public function getL2ListByPid(int $pid)
     {
-        return Category::query()->where('level', 'L2')->where('pid', $pid)->where('deleted', 0)->get();
+        return Category::query()->where('level', 'L2')->where('pid', $pid)->get();
     }
 
     /**
@@ -33,7 +33,7 @@ class CatalogServices extends BaseServices
      */
     public function getL1ById(int $id)
     {
-        return Category::query()->where('level', 'L1')->where('id', $id)->where('deleted', 0)->first();
+        return Category::query()->where('level', 'L1')->where('id', $id)->first();
     }
 
     public function getCategoryById(int $id)

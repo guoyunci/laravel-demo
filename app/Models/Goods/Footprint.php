@@ -3,6 +3,7 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use App\Models\BooleanSoftDeletes;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -29,6 +30,8 @@ use Illuminate\Support\Carbon;
  */
 class Footprint extends BaseModel
 {
+    use BooleanSoftDeletes;
+
     // protected $table = 'footprint';
 
     /**

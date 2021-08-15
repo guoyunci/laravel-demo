@@ -4,6 +4,7 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use App\Models\BooleanSoftDeletes;
 
 /**
  * App\Models\Goods\Issue
@@ -27,4 +28,5 @@ use App\Models\BaseModel;
  */
 class Issue extends BaseModel
 {
+    use BooleanSoftDeletes;
 }

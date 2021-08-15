@@ -4,6 +4,7 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use App\Models\BooleanSoftDeletes;
 
 /**
  * App\Models\Goods\Category
@@ -39,4 +40,5 @@ use App\Models\BaseModel;
  */
 class Category extends BaseModel
 {
+    use BooleanSoftDeletes;
 }

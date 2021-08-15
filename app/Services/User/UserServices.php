@@ -19,7 +19,7 @@ class UserServices extends BaseServices
         if (empty($userIds)) {
             return collect([]);
         }
-        return User::query()->whereIn('id', $userIds)->where('deleted', 0)->get();
+        return User::query()->whereIn('id', $userIds)->->get();
     }
 
     /**
@@ -28,7 +28,7 @@ class UserServices extends BaseServices
      */
     public function getByUsername(string $username)
     {
-        return User::query()->where('username', $username)->where('deleted', 0)->first();
+        return User::query()->where('username', $username)->->first();
     }
 
     /**
@@ -37,7 +37,7 @@ class UserServices extends BaseServices
      */
     public function getByMobile(string $mobile)
     {
-        return User::query()->where('mobile', $mobile)->where('deleted', 0)->first();
+        return User::query()->where('mobile', $mobile)->->first();
     }
 
     /**

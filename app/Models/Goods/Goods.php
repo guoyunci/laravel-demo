@@ -3,6 +3,7 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use App\Models\BooleanSoftDeletes;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -60,6 +61,8 @@ use Illuminate\Support\Carbon;
  */
 class Goods extends BaseModel
 {
+    use BooleanSoftDeletes;
+
     /**
      * The attributes that should be cast to native types.
      *

@@ -37,7 +37,6 @@ class CommentServices extends BaseServices
     ): LengthAwarePaginator {
         return Comment::query()->where('value_id', $goodsId)
             ->where('type', Constant::COMMENT_TYPE_GOODS)
-            ->where('deleted', 0)
             ->orderBy($sort, $order)
             ->paginate(
                 $limit,
