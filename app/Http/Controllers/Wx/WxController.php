@@ -30,7 +30,26 @@ class WxController extends Controller
         $this->middleware('auth:wx', $option);
     }
 
-    public function failOrSuccess(
+    public function isLogin()
+    {
+        return !is_null($this->user());
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    public function user()
+    {
+        return Auth::guard('wx')->user();
+    }
+
+    public function userId()
+    {
+        // return $this->user()->id;
+        return $this->user()->getAuthIdentifier();
+    }
+
+    protected function failOrSuccess(
         $isSuccess,
         array $codeResponse = CodeResponse::FAIL,
         $data = null,
@@ -63,28 +82,27 @@ class WxController extends Controller
         return response()->json($ret);
     }
 
-    public function fail(array $codeResponse = CodeResponse::FAIL, $info = ''): JsonResponse
+    protected function fail(array $codeResponse = CodeResponse::FAIL, $info = ''): JsonResponse
     {
         return $this->codeReturn($codeResponse, null, $info);
     }
 
-    public function isLogin()
+    /**
+     * 401
+     * @return JsonResponse
+     */
+    protected function badArgument()
     {
-        return !is_null($this->user());
+        return $this->fail(CodeResponse::PARAM_ILLEGAL);
     }
 
     /**
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * 402
+     * @return JsonResponse
      */
-    public function user()
+    protected function badArgumentValue()
     {
-        return Auth::guard('wx')->user();
-    }
-
-    public function userId()
-    {
-        // return $this->user()->id;
-        return $this->user()->getAuthIdentifier();
+        return $this->fail(CodeResponse::PARAM_VALUE_ILLEGAL);
     }
 
     /**
