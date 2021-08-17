@@ -13,7 +13,7 @@ use App\Services\BaseServices;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
-class GoodsService extends BaseServices
+class GoodsServices extends BaseServices
 {
     public function getGoods(int $id)
     {
@@ -51,6 +51,19 @@ class GoodsService extends BaseServices
         $footprint = Footprint::new();
         $footprint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
         return $footprint->save();
+    }
+
+    public function getGoodsProductById(int $id)
+    {
+        return GoodsProduct::query()->find($id);
+    }
+
+    public function getGoodsProductsByIds(array $ids)
+    {
+        if (empty($ids)) {
+            return collect();
+        }
+        return GoodsProduct::query()->whereIn('id', $ids)->get();
     }
 
     /**

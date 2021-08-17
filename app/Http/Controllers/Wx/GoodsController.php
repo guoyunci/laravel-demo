@@ -10,7 +10,7 @@ use App\Services\CollectServices;
 use App\Services\CommentServices;
 use App\Services\Goods\BrandServices;
 use App\Services\Goods\CatalogServices;
-use App\Services\Goods\GoodsService;
+use App\Services\Goods\GoodsServices;
 use App\Services\SearchHistoryServices;
 
 class GoodsController extends WxController
@@ -22,7 +22,7 @@ class GoodsController extends WxController
      */
     public function count()
     {
-        $count = GoodsService::getInstance()->countGoodsOnSale();
+        $count = GoodsServices::getInstance()->countGoodsOnSale();
         return $this->success($count);
     }
 
@@ -80,9 +80,9 @@ class GoodsController extends WxController
         $columns = ['id', 'name', 'brief', 'pic_url', 'is_new', 'is_hot', 'counter_price', 'retail_price'];
         // $goodsList = GoodsService::getInstance()->listGoods($categoryId, $brandId, $isNew, $isHot, $keyword, $sort,
         //     $order, $page, $limit);
-        $goodsList = GoodsService::getInstance()->listGoods($input, $columns);
+        $goodsList = GoodsServices::getInstance()->listGoods($input, $columns);
 
-        $categoryList = GoodsService::getInstance()->listL2Category($input);
+        $categoryList = GoodsServices::getInstance()->listL2Category($input);
 
         $goodsList = $this->paginate($goodsList);
         $goodsList['filterCategoryList'] = $categoryList;
@@ -96,20 +96,20 @@ class GoodsController extends WxController
     public function detail()
     {
         $id = $this->verifyId('id');
-        $info = GoodsService::getInstance()->getGoods($id);
+        $info = GoodsServices::getInstance()->getGoods($id);
         if (empty($info)) {
             return $this->fail(CodeResponse::PARAM_ILLEGAL);
         }
-        $attr = GoodsService::getInstance()->getGoodsAttribute($id);
-        $spec = GoodsService::getInstance()->getGoodsSpecification($id);
-        $product = GoodsService::getInstance()->getGoodsProduct($id);
-        $issue = GoodsService::getInstance()->getGoodsIssue();
+        $attr = GoodsServices::getInstance()->getGoodsAttribute($id);
+        $spec = GoodsServices::getInstance()->getGoodsSpecification($id);
+        $product = GoodsServices::getInstance()->getGoodsProduct($id);
+        $issue = GoodsServices::getInstance()->getGoodsIssue();
         $brand = $info->brand_id ? BrandServices::getInstance()->getBrand($info->brand_id) : (object) [];
         $comment = CommentServices::getInstance()->getCommentWithUserInfo($id);
         $userHasCollect = 0;
         if ($this->isLogin()) {
             $userHasCollect = CollectServices::getInstance()->countByGoodsId($this->userId(), $id);
-            GoodsService::getInstance()->saveFootprint($this->userId(), $id);
+            GoodsServices::getInstance()->saveFootprint($this->userId(), $id);
         }
         return $this->success([
             'info' => $info,

@@ -7,7 +7,21 @@ use App\Exceptions\BusinessException;
 
 class BaseServices
 {
-    protected static $instance;
+    // protected static $instance;
+
+    protected static $instance = [];
+
+    // /**
+    //  * @return static
+    //  */
+    // public static function getInstance()
+    // {
+    //     if (static::$instance instanceof static) {
+    //         return static::$instance;
+    //     }
+    //     static::$instance = new static();
+    //     return static::$instance;
+    // }
 
     private function __construct()
     {
@@ -18,11 +32,18 @@ class BaseServices
      */
     public static function getInstance()
     {
-        if (static::$instance instanceof static) {
-            return static::$instance;
+        if ((static::$instance[static::class] ?? null) instanceof static) {
+            return static::$instance[static::class];
         }
-        static::$instance = new static();
-        return static::$instance;
+        return static::$instance[static::class] = new static();
+    }
+
+    /**
+     * @throws BusinessException
+     */
+    public function throwBadArgumentValue()
+    {
+        $this->throwBusinessException(CodeResponse::PARAM_VALUE_ILLEGAL);
     }
 
     /**
@@ -32,6 +53,14 @@ class BaseServices
     public function throwBusinessException(array $codeResponse, $info = '')
     {
         throw new BusinessException($codeResponse, $info);
+    }
+
+    /**
+     * @throws BusinessException
+     */
+    public function throwUpdateFail()
+    {
+        $this->throwBusinessException(CodeResponse::UPDATED_FAIL);
     }
 
     private function __clone()
