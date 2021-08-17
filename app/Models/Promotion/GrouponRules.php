@@ -5,6 +5,7 @@ namespace App\Models\Promotion;
 use App\Models\BaseModel;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
 /**
@@ -39,4 +40,5 @@ use Illuminate\Support\Carbon;
  */
 class GrouponRules extends BaseModel
 {
+    use HasFactory;
 }

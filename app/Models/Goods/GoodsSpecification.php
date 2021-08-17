@@ -5,6 +5,7 @@ namespace App\Models\Goods;
 
 use App\Models\BaseModel;
 use App\Models\BooleanSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * App\Models\Goods\GoodsSpecification
@@ -29,8 +30,10 @@ use App\Models\BooleanSoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereUpdateTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereValue($value)
  * @mixin \Eloquent
+ * @method static \Database\Factories\Goods\GoodsSpecificationFactory factory(...$parameters)
  */
 class GoodsSpecification extends BaseModel
 {
+    use HasFactory;
     use BooleanSoftDeletes;
 }
