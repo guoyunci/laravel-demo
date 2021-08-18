@@ -3,23 +3,101 @@
 namespace Tests\Feature;
 
 use App\Models\Goods\GoodsProduct;
-use App\Models\User\User;
+use App\Services\Goods\GoodsServices;
 use App\Services\Order\CartServices;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class CartTest extends TestCase
 {
-    // use DatabaseTransactions;
+    use DatabaseTransactions;
 
-    /**
-     * @var User $user
-     */
-    private $user;
-    /**
-     * @var GoodsProduct $product
-     */
+    /** @var GoodsProduct $product */
     private $product;
-    private $authHeader;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->product = GoodsProduct::factory()->create([
+            'number' => 10
+        ]);
+    }
+
+    public function testIndex()
+    {
+        $this->post('wx/cart/add', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 2
+        ]);
+
+        $resp = $this->get('wx/cart/index', []);
+        $resp->assertJson([
+            "errno" => 0, "errmsg" => "成功", "data" => [
+                'cartList' => [
+                    [
+                        'goodsId' => $this->product->goods_id,
+                        'productId' => $this->product->id,
+                    ]
+                ],
+                'cartTotal' => [
+                    "goodsCount" => 2,
+                    "goodsAmount" => 1998.00,
+                    "checkedGoodsCount" => 2,
+                    "checkedGoodsAmount" => 1998.00,
+                ]
+            ]
+        ]);
+
+        $goods = GoodsServices::getInstance()->getGoods($this->product->goods_id);
+        $goods->is_on_sale = false;
+        $goods->save();
+
+        $resp = $this->get('wx/cart/index', []);
+        $resp->assertJson([
+            "errno" => 0, "errmsg" => "成功", "data" => [
+                'cartList' => [],
+                'cartTotal' => [
+                    "goodsCount" => 0,
+                    "goodsAmount" => 0,
+                    "checkedGoodsCount" => 0,
+                    "checkedGoodsAmount" => 0,
+                ]
+            ]
+        ]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertNull($cart);
+    }
+
+    public function testFastadd()
+    {
+        $resp = $this->post('wx/cart/add', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 2
+        ]);
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
+
+        $resp = $this->post('wx/cart/fastadd', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 5
+        ]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertEquals(5, $cart->number);
+
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功", 'data' => $cart->id]);
+    }
 
     public function testAdd()
     {
@@ -66,15 +144,6 @@ class CartTest extends TestCase
         $resp->assertJson(["errno" => 711, "errmsg" => "库存不足"]);
     }
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create();
-        $this->product = GoodsProduct::factory()->create([
-            'number' => 10
-        ]);
-        $this->authHeader = $this->getAuthHeader($this->user->username, '123456');
-    }
 
     public function testUpdate()
     {
@@ -116,38 +185,38 @@ class CartTest extends TestCase
         $resp->assertJson(['errno' => 402]);
     }
 
-    // public function testDelete()
-    // {
-    //     $resp = $this->post('wx/cart/add', [
-    //         'goodsId' => $this->product->goods_id,
-    //         'productId' => $this->product->id,
-    //         'number' => 2
-    //     ]);
-    //     $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
-    //
-    //     $cart = CartServices::getInstance()->getCartProduct(
-    //         $this->user->id,
-    //         $this->product->goods_id,
-    //         $this->product->id
-    //     );
-    //     $this->assertNotNull($cart);
-    //
-    //     $resp = $this->post('wx/cart/delete', [
-    //         'productIds' => [$this->product->id],
-    //     ]);
-    //
-    //     $cart = CartServices::getInstance()->getCartProduct(
-    //         $this->user->id,
-    //         $this->product->goods_id,
-    //         $this->product->id
-    //     );
-    //     $this->assertNull($cart);
-    //
-    //     $resp = $this->post('wx/cart/delete', [
-    //         'productIds' => [],
-    //     ]);
-    //     $resp->assertJson(["errno" => 402]);
-    // }
+    public function testDelete()
+    {
+        $resp = $this->post('wx/cart/add', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 2
+        ]);
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertNotNull($cart);
+
+        $resp = $this->post('wx/cart/delete', [
+            'productIds' => [$this->product->id],
+        ]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertNull($cart);
+
+        $resp = $this->post('wx/cart/delete', [
+            'productIds' => [],
+        ]);
+        $resp->assertJson(["errno" => 402]);
+    }
 
     public function testChecked()
     {
@@ -190,4 +259,39 @@ class CartTest extends TestCase
         );
         $this->assertTrue($cart->checked);
     }
+
+
+    // public function testCheckout()
+    // {
+    //     $this->assertLitemallApi('wx/cart/checkout');
+    //     $this->assertLitemallApi('wx/cart/checkout', 'get', [
+    //         "cartId" => 0,
+    //         "addressId" => 0,
+    //         "couponId" => 0,
+    //         "userCouponId" => 0,
+    //         "grouponRulesId" => 0,
+    //     ], ['data.userCouponId']);
+    //
+    //     $this->assertLitemallApi('wx/cart/checkout', 'get', [
+    //         "cartId" => 193,
+    //         "addressId" => 2,
+    //         "couponId" => 2,
+    //         "userCouponId" => 9,
+    //         "grouponRulesId" => 0,
+    //     ]);
+    //     $this->assertLitemallApi('wx/cart/checkout', 'get', [
+    //         "cartId" => 0,
+    //         "addressId" => 0,
+    //         "couponId" => 1,
+    //         "userCouponId" => 9,
+    //         "grouponRulesId" => 0,
+    //     ]);
+    //     $this->assertLitemallApi('wx/cart/checkout', 'get', [
+    //         "cartId" => 0,
+    //         "addressId" => 0,
+    //         "couponId" => -1,
+    //         "userCouponId" => 0,
+    //         "grouponRulesId" => 0,
+    //     ]);
+    // }
 }

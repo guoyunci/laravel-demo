@@ -4,6 +4,7 @@ namespace App\Services\Order;
 
 use App\CodeResponse;
 use App\Exceptions\BusinessException;
+use App\Models\BaseModel;
 use App\Models\Goods\Goods;
 use App\Models\Goods\GoodsProduct;
 use App\Models\Order\Cart;
@@ -159,6 +160,14 @@ class CartServices extends BaseServices
             ->where('product_id', $productId)->first();
     }
 
+    /**
+     * @param $userId
+     * @param  Goods  $goods
+     * @param  GoodsProduct  $product
+     * @param $number
+     * @return BaseModel|Cart
+     * @throws BusinessException
+     */
     public function newCart($userId, Goods $goods, GoodsProduct $product, $number)
     {
         if ($number > $product->number) {
