@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\User\UserServices;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -15,19 +16,19 @@ class AuthTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testBasicTest()
     {
         $response = $this->get('/');
 
         $response->assertStatus(200);
     }
 
-    public function test_register_errcode()
+    public function testRegisterErrCode()
     {
         $response = $this->post('wx/auth/register', [
-            'username' => 'test10',
+            'username' => 'test15',
             'password' => '123456',
-            'mobile' => '13111111101',
+            'mobile' => '13111111100',
             'code' => '123'
         ]);
         $response->assertJson([
@@ -36,13 +37,13 @@ class AuthTest extends TestCase
         ]);
     }
 
-    public function test_register()
+    public function testRegister()
     {
-        $code = UserServices::getInstance()->setCaptcha('13111111101');
+        $code = UserServices::getInstance()->setCaptcha('13111111100');
         $response = $this->post('wx/auth/register', [
-            'username' => 'test10',
+            'username' => 'test35',
             'password' => '123456',
-            'mobile' => '13111111101',
+            'mobile' => '13111111100',
             'code' => $code
         ]);
         $response->assertStatus(200);
@@ -51,7 +52,7 @@ class AuthTest extends TestCase
         // $this->assertNotEmpty($ret['userInfo']);
     }
 
-    public function test_register_mobile()
+    public function testRegisterMobile()
     {
         $response = $this->post('wx/auth/register', [
             'username' => 'test20',
@@ -64,7 +65,7 @@ class AuthTest extends TestCase
         $this->assertEquals(702, $ret['errno']);
     }
 
-    public function test_reg_captcha()
+    public function testRegCaptcha()
     {
         $response = $this->post('wx/auth/regCaptcha', [
             'mobile' => '13222223232',
@@ -76,7 +77,7 @@ class AuthTest extends TestCase
         $response->assertJson(['errno' => 702, 'errmsg' => '验证码未超过1分钟, 不能发送']);
     }
 
-    public function test_login()
+    public function testLogin()
     {
         $response = $this->post('wx/auth/login', [
             'username' => 'test1',
@@ -96,9 +97,76 @@ class AuthTest extends TestCase
         $this->assertNotEmpty($response->getOriginalContent()['data']['token'] ?? '');
     }
 
-    public function test_user()
+    public function testInfo()
     {
-        $response = $this->get('wx/auth/user', $this->getAuthHeader());
-        $response->assertJson(['data' => ['username' => 'user123']]);
+        $response = $this->post('wx/auth/login', ['username' => 'user123', 'password' => 'user123']);
+        $token = $response->getOriginalContent()['data']['token'] ?? '';
+        $response2 = $this->get('wx/auth/info', ['Authorization' => "Bearer {$token}"]);
+        $user = UserServices::getInstance()->getByUsername('user123');
+        $response2->assertJson([
+            'data' => [
+                'nickName' => $user->nickname,
+                'avatar' => $user->avatar,
+                'gender' => $user->gender,
+                'mobile' => $user->mobile
+            ]
+        ]);
+    }
+
+    public function testLogout()
+    {
+        $response = $this->post('wx/auth/login', ['username' => 'user123', 'password' => 'user123']);
+        $token = $response->getOriginalContent()['data']['token'] ?? '';
+        $response2 = $this->get('wx/auth/info', ['Authorization' => "Bearer {$token}"]);
+        $user = UserServices::getInstance()->getByUsername('user123');
+        $response2->assertJson([
+            'data' => [
+                'nickName' => $user->nickname,
+                'avatar' => $user->avatar,
+                'gender' => $user->gender,
+                'mobile' => $user->mobile
+            ]
+        ]);
+        $response3 = $this->post('wx/auth/logout', [], ['Authorization' => "Bearer {$token}"]);
+        $response3->assertJson(['errno' => 0]);
+        $response4 = $this->get('wx/auth/info', ['Authorization' => "Bearer {$token}"]);
+        $response4->assertJson(['errno' => 501]);
+    }
+
+    public function testRest()
+    {
+        $mobile = '13100000000';
+        $code = UserServices::getInstance()->setCaptcha($mobile);
+        $response = $this->post(
+            'wx/auth/reset',
+            [
+                'mobile' => $mobile,
+                'password' => 'user123',
+                'code' => $code
+            ]
+        );
+        $response->assertJson(['errno' => 0]);
+        $user = UserServices::getInstance()->getByMobile($mobile);
+        $isPass = Hash::check('user123', $user->password);
+        $this->assertTrue($isPass);
+    }
+
+    public function testProfile()
+    {
+        $response = $this->post('wx/auth/login', ['username' => 'user123', 'password' => 'user123']);
+        $token = $response->getOriginalContent()['data']['token'] ?? '';
+        $response = $this->post(
+            'wx/auth/profile',
+            [
+                'avatar' => '',
+                'gender' => 1,
+                'nickname' => 'user1234'
+            ],
+            ['Authorization' => "Bearer {$token}"]
+        );
+        $response->assertJson(['errno' => 0]);
+        $user = UserServices::getInstance()->getByUsername('user123');
+        $this->assertEquals('user1234', $user->nickname);
+        $this->assertEquals(1, $user->gender);
     }
 }
