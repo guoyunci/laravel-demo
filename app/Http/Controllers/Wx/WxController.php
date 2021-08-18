@@ -1,11 +1,11 @@
 <?php
-/** @noinspection ALL */
 
 namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Http\Controllers\Controller;
 use App\VerifyRequestInput;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -36,7 +36,7 @@ class WxController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * @return Authenticatable|null
      */
     public function user()
     {

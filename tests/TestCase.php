@@ -13,11 +13,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * @return string[]
      */
-    public function getAuthHeader(): array
+    public function getAuthHeader($username = 'user123', $password = 'user123'): array
     {
         $response = $this->post('wx/auth/login', [
-            'username' => 'user123',
-            'password' => 'user123'
+            'username' => $username,
+            'password' => $password
         ]);
         $token = $response->getOriginalContent()['data']['token'] ?? '';
         $this->token = $token;
