@@ -57,13 +57,13 @@ Route::get('goods/detail', [GoodsController::class, 'detail']); //获得商品�
 //
 // # 订单模块-购物车
 Route::post('cart/add', [CartController::class, 'add']); // 添加商品到购物车
-Route::get('cart/goodscount', 'CartController@goodscount'); // 获取购物车商品件数
-Route::post('cart/update', 'CartController@update'); // 更新购物车的商品的数量
-Route::post('cart/delete', 'CartController@delete'); // 删除购物车的商品
-Route::post('cart/checked', 'CartController@checked'); // 选择或取消选择商品
-Route::post('cart/fastadd', 'CartController@fastadd'); // 立即购买商品
-Route::get('cart/index', 'CartController@index'); //获取购物车的数据
-Route::get('cart/checkout', 'CartController@checkout'); // 下单前信息确认
+Route::get('cart/goodscount', [CartController::class, 'goodscount']); // 获取购物车商品件数
+Route::post('cart/update', [CartController::class, 'update']); // 更新购物车的商品的数量
+Route::post('cart/delete', [CartController::class, 'delete']); // 删除购物车的商品
+Route::post('cart/checked', [CartController::class, 'checked']); // 选择或取消选择商品
+Route::post('cart/fastadd', [CartController::class, 'fastadd']); // 立即购买商品
+Route::get('cart/index', [CartController::class, 'index']); //获取购物车的数据
+Route::get('cart/checkout', [CartController::class, 'checkout']); // 下单前信息确认
 //
 // # 订单模块-订单
 // Route::post('order/submit', 'OrderController@submit'); // 提交订单

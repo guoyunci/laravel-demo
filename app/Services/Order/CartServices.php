@@ -25,7 +25,7 @@ class CartServices extends BaseServices
         $list = $this->getCartList($userId);
         $goodsIds = $list->pluck('goods_id')->toArray();
         $goodsList = GoodsServices::getInstance()
-            ->getGoodsProductsByIds($goodsIds)->keyBy('id');
+            ->getGoodsListByIds($goodsIds)->keyBy('id');
         $invalidCartIds = [];
         $list = $list->filter(function (Cart $cart) use ($goodsList, &$invalidCartIds) {
             /** @var Goods $goods */

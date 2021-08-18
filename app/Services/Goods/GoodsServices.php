@@ -10,11 +10,18 @@ use App\Models\Goods\GoodsProduct;
 use App\Models\Goods\GoodsSpecification;
 use App\Models\Goods\Issue;
 use App\Services\BaseServices;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 class GoodsServices extends BaseServices
 {
+    public function getGoodsListByIds(array $ids)
+    {
+        if (empty($ids)) {
+            return collect();
+        }
+        return Goods::query()->whereIn('id', $ids)->get();
+    }
+
     public function getGoods(int $id)
     {
         return Goods::query()->find($id);
@@ -27,10 +34,7 @@ class GoodsServices extends BaseServices
 
     public function getGoodsSpecification(int $goodsId)
     {
-        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->where(
-            'deleted',
-            0
-        )->get()->groupBy('specification');
+        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->get()->groupBy('specification');
         return $spec->map(function ($v, $k) {
             return ['name' => $k, 'valueList' => $v];
         })->values();
@@ -41,23 +45,6 @@ class GoodsServices extends BaseServices
         return GoodsProduct::query()->where('goods_id', $goodsId)->get();
     }
 
-    public function getGoodsIssue(int $page = 1, int $limit = 4)
-    {
-        return Issue::query()->forPage($page, $limit)->get();
-    }
-
-    public function saveFootprint($userId, $goodsId): bool
-    {
-        $footprint = Footprint::new();
-        $footprint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
-        return $footprint->save();
-    }
-
-    public function getGoodsProductById(int $id)
-    {
-        return GoodsProduct::query()->find($id);
-    }
-
     public function getGoodsProductsByIds(array $ids)
     {
         if (empty($ids)) {
@@ -66,36 +53,43 @@ class GoodsServices extends BaseServices
         return GoodsProduct::query()->whereIn('id', $ids)->get();
     }
 
-    /**
-     * 获取在售商品数量
-     * @return int
-     */
-    public function countGoodsOnSale(): int
+    public function getGoodsIssue(int $page = 1, int $limit = 4)
     {
-        return Goods::query()->where('is_on_sale', 1)->count('id');
+        return Issue::query()->forPage($page, $limit)->get();
+    }
+
+    public function saveFootprint($userId, $goodsId)
+    {
+        $footprint = new Footprint();
+        $footprint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
+        return $footprint->save();
     }
 
     /**
-     * @param  GoodsListInput  $input
-     * @param $columns
-     * @return LengthAwarePaginator
+     * 获取在售商品的数量
+     * @return int
      */
-    public function listGoods(GoodsListInput $input, $columns): LengthAwarePaginator
+    public function countGoodsOnSale()
+    {
+        return Goods::query()->where('is_on_sale', 1)
+            ->count('id');
+    }
+
+    public function listGoods(GoodsListInput $input, $columns)
     {
         $query = $this->getQueryByGoodsFilter($input);
         if (!empty($input->categoryId)) {
             $query = $query->where('category_id', $input->categoryId);
         }
-        return $query->orderBy($input->sort, $input->order)->paginate($input->limit, $columns, 'page', $input->page);
+
+        return $query->orderBy($input->sort, $input->order)
+            ->paginate($input->limit, $columns, 'page', $input->page);
     }
 
-    /**
-     * @param  GoodsListInput  $input
-     * @return Builder
-     */
-    private function getQueryByGoodsFilter(GoodsListInput $input): Builder
+    private function getQueryByGoodsFilter(GoodsListInput $input)
     {
         $query = Goods::query()->where('is_on_sale', 1);
+
         if (!empty($input->brandId)) {
             $query = $query->where('brand_id', $input->brandId);
         }
@@ -117,9 +111,25 @@ class GoodsServices extends BaseServices
     public function listL2Category(GoodsListInput $input)
     {
         $query = $this->getQueryByGoodsFilter($input);
-        // dd($query->toSql());
         $categoryIds = $query->select(['category_id'])->pluck('category_id')->unique()->toArray();
-        // dd($categoryIds);
         return CatalogServices::getInstance()->getL2ListByIds($categoryIds);
+    }
+
+    public function reduceStock($productId, $num)
+    {
+        return GoodsProduct::query()->where('id', $productId)->where('number', '>=', $num)
+            ->decrement('number', $num);
+    }
+
+    public function addStock($productId, $num)
+    {
+        $product = $this->getGoodsProductById($productId);
+        $product->number = $product->number + $num;
+        return $product->cas();
+    }
+
+    public function getGoodsProductById(int $id)
+    {
+        return GoodsProduct::query()->find($id);
     }
 }

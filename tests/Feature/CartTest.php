@@ -75,4 +75,119 @@ class CartTest extends TestCase
         ]);
         $this->authHeader = $this->getAuthHeader($this->user->username, '123456');
     }
+
+    public function testUpdate()
+    {
+        $resp = $this->post('wx/cart/add', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 2
+        ]);
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+
+        $resp = $this->post('wx/cart/update', [
+            'id' => $cart->id,
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 6
+        ]);
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功"]);
+
+        $resp = $this->post('wx/cart/update', [
+            'id' => $cart->id,
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 11
+        ]);
+        $resp->assertJson(['errno' => 711, 'errmsg' => '库存不足']);
+
+        $resp = $this->post('wx/cart/update', [
+            'id' => $cart->id,
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 0
+        ]);
+        $resp->assertJson(['errno' => 402]);
+    }
+
+    // public function testDelete()
+    // {
+    //     $resp = $this->post('wx/cart/add', [
+    //         'goodsId' => $this->product->goods_id,
+    //         'productId' => $this->product->id,
+    //         'number' => 2
+    //     ]);
+    //     $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
+    //
+    //     $cart = CartServices::getInstance()->getCartProduct(
+    //         $this->user->id,
+    //         $this->product->goods_id,
+    //         $this->product->id
+    //     );
+    //     $this->assertNotNull($cart);
+    //
+    //     $resp = $this->post('wx/cart/delete', [
+    //         'productIds' => [$this->product->id],
+    //     ]);
+    //
+    //     $cart = CartServices::getInstance()->getCartProduct(
+    //         $this->user->id,
+    //         $this->product->goods_id,
+    //         $this->product->id
+    //     );
+    //     $this->assertNull($cart);
+    //
+    //     $resp = $this->post('wx/cart/delete', [
+    //         'productIds' => [],
+    //     ]);
+    //     $resp->assertJson(["errno" => 402]);
+    // }
+
+    public function testChecked()
+    {
+        $resp = $this->post('wx/cart/add', [
+            'goodsId' => $this->product->goods_id,
+            'productId' => $this->product->id,
+            'number' => 2
+        ]);
+        $resp->assertJson(["errno" => 0, "errmsg" => "成功", "data" => "2"]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+
+        $this->assertTrue($cart->checked);
+
+        $resp = $this->post('wx/cart/checked', [
+            'productIds' => [$this->product->id],
+            'isChecked' => 0
+        ]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertFalse($cart->checked);
+
+        $resp = $this->post('wx/cart/checked', [
+            'productIds' => [$this->product->id],
+            'isChecked' => 1
+        ]);
+
+        $cart = CartServices::getInstance()->getCartProduct(
+            $this->user->id,
+            $this->product->goods_id,
+            $this->product->id
+        );
+        $this->assertTrue($cart->checked);
+    }
 }

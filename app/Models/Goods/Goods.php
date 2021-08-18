@@ -3,10 +3,9 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
-use App\Models\BooleanSoftDeletes;
+use Database\Factories\Goods\GoodsFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
 /**
@@ -59,13 +58,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Goods whereUnit($value)
  * @method static Builder|Goods whereUpdateTime($value)
  * @mixin Eloquent
- * @method static \Database\Factories\Goods\GoodsFactory factory(...$parameters)
+ * @method static GoodsFactory factory(...$parameters)
  */
 class Goods extends BaseModel
 {
-    use BooleanSoftDeletes;
-    use HasFactory;
-
     /**
      * The attributes that should be cast to native types.
      *

@@ -1,11 +1,12 @@
 <?php
-/** @noinspection ALL */
 
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
-use App\Models\BooleanSoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Goods\GoodsSpecificationFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Goods\GoodsSpecification
@@ -15,25 +16,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $specification 商品规格名称
  * @property string $value 商品规格值
  * @property string $pic_url 商品规格图片
- * @property \Illuminate\Support\Carbon|null $add_time 创建时间
- * @property \Illuminate\Support\Carbon|null $update_time 更新时间
+ * @property Carbon|null $add_time 创建时间
+ * @property Carbon|null $update_time 更新时间
  * @property bool|null $deleted 逻辑删除
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification query()
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereAddTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereDeleted($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereGoodsId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification wherePicUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereSpecification($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereUpdateTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GoodsSpecification whereValue($value)
- * @mixin \Eloquent
- * @method static \Database\Factories\Goods\GoodsSpecificationFactory factory(...$parameters)
+ * @method static Builder|GoodsSpecification newModelQuery()
+ * @method static Builder|GoodsSpecification newQuery()
+ * @method static Builder|GoodsSpecification query()
+ * @method static Builder|GoodsSpecification whereAddTime($value)
+ * @method static Builder|GoodsSpecification whereDeleted($value)
+ * @method static Builder|GoodsSpecification whereGoodsId($value)
+ * @method static Builder|GoodsSpecification whereId($value)
+ * @method static Builder|GoodsSpecification wherePicUrl($value)
+ * @method static Builder|GoodsSpecification whereSpecification($value)
+ * @method static Builder|GoodsSpecification whereUpdateTime($value)
+ * @method static Builder|GoodsSpecification whereValue($value)
+ * @mixin Eloquent
+ * @method static GoodsSpecificationFactory factory(...$parameters)
  */
 class GoodsSpecification extends BaseModel
 {
-    use HasFactory;
-    use BooleanSoftDeletes;
 }
