@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Wx\AddressController;
 use App\Http\Controllers\Wx\AuthController;
 use App\Http\Controllers\Wx\BrandController;
 use App\Http\Controllers\Wx\CartController;
@@ -28,10 +29,10 @@ Route::post('auth/captcha', [AuthController::class, 'captcha']); //验证码
 Route::post('auth/profile', [AuthController::class, 'profile']); //账号修改
 
 # 用户模块-地址
-// Route::get('address/list', 'AddressController@list'); //收货地址列表
-// Route::get('address/detail', 'AddressController@detail'); //收货地址详情
-// Route::post('address/save', 'AddressController@save'); //保存收货地址
-// Route::post('address/delete', 'AddressController@delete'); //删除收货地址
+Route::get('address/list', [AddressController::class, 'list']); //收货地址列表
+Route::get('address/detail', [AddressController::class, 'detail']); //收货地址详情
+Route::post('address/save', [AddressController::class, 'save']); //保存收货地址
+Route::post('address/delete', [AddressController::class, 'delete']); //删除收货地址
 
 # 商品模块-类目
 Route::get('catalog/index', [CatalogController::class, 'index']); //分类目录全部分类数据接口

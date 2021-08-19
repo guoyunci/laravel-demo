@@ -106,6 +106,16 @@ class WxController extends Controller
     }
 
     /**
+     * @param $page
+     * @param  null  $list
+     * @return JsonResponse
+     */
+    protected function successPaginate($page, $list = null)
+    {
+        return $this->success($this->paginate($page, $list));
+    }
+
+    /**
      * @param  LengthAwarePaginator|array  $page
      * @param  null|array  $list
      * @return array

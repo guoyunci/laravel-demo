@@ -35,6 +35,7 @@ class Input
 
         $validator = Validator::make($data, $this->rules());
         if ($validator->fails()) {
+            // dd($validator->getMessageBag());
             throw new BusinessException(CodeResponse::PARAM_VALUE_ILLEGAL);
         }
 
