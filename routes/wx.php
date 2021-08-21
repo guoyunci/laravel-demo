@@ -6,6 +6,7 @@ use App\Http\Controllers\Wx\BrandController;
 use App\Http\Controllers\Wx\CartController;
 use App\Http\Controllers\Wx\CatalogController;
 use App\Http\Controllers\Wx\GoodsController;
+use App\Http\Controllers\Wx\OrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,7 +72,7 @@ Route::get('cart/index', [CartController::class, 'index']); //获取购物车的
 Route::get('cart/checkout', [CartController::class, 'checkout']); // 下单前信息确认
 //
 // # 订单模块-订单
-// Route::post('order/submit', 'OrderController@submit'); // 提交订单
+Route::post('order/submit', [OrderController::class, 'submit']); // 提交订单
 // Route::post('order/cancel', 'OrderController@cancel'); //取消订单
 // Route::post('order/refund', 'OrderController@refund'); //退款取消订单
 // Route::post('order/delete', 'OrderController@delete'); //删除订单

@@ -7,7 +7,6 @@ use App\Enums\OrderEnums;
 use App\Exceptions\BusinessException;
 use App\Inputs\OrderSubmitInput;
 use App\Inputs\PageInput;
-use App\Jobs\OrderUnpaidTimeEndJob;
 use App\Models\Goods\GoodsProduct;
 use App\Models\Order\Cart;
 use App\Models\Order\Order;
@@ -151,7 +150,7 @@ class OrderServices extends BaseServices
         );
 
         // 设置超时任务
-        dispatch(new OrderUnpaidTimeEndJob($userId, $order->id));
+        // dispatch(new OrderUnpaidTimeEndJob($userId, $order->id));
 
         return $order;
     }
@@ -183,7 +182,7 @@ class OrderServices extends BaseServices
             if (!$this->isOrderSnUsed($orderSn)) {
                 return $orderSn;
             }
-            \Log::warning('订单号获取失败，orderSn:'.$orderSn);
+            Log::warning('订单号获取失败，orderSn:'.$orderSn);
             $this->throwBusinessException(CodeResponse::FAIL, '订单号获取失败');
         });
     }
