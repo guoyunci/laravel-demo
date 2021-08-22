@@ -8,7 +8,7 @@ use App\Services\Order\CartServices;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class CartTest extends TestCase
+class OrderTest extends TestCase
 {
     use DatabaseTransactions;
 
