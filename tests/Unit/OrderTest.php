@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Enums\OrderEnums;
 use App\Inputs\OrderSubmitInput;
 use App\Models\Goods\GoodsProduct;
-use App\Models\Order\Order;
 use App\Models\Order\OrderGoods;
 use App\Models\Promotion\GrouponRules;
 use App\Models\User\User;
@@ -141,50 +140,50 @@ class OrderTest extends TestCase
         $user->save();
     }
 
-    public function testBaseProcess()
-    {
-        $order = $this->getOrder()->refresh();
-        OrderServices::getInstance()->payOrder($order, 'payid_test');
-        $this->assertEquals(OrderEnums::STATUS_PAY, $order->refresh()->order_status);
-        $this->assertEquals('payid_test', $order->pay_id);
-
-        $shipSn = '1234567';
-        $shipChannel = 'shunfeng';
-        OrderServices::getInstance()->ship($this->user->id, $order->id, $shipSn, $shipChannel);
-        $order->refresh();
-        $this->assertEquals(OrderEnums::STATUS_SHIP, $order->order_status);
-        $this->assertEquals($shipSn, $order->ship_sn);
-        $this->assertEquals($shipChannel, $order->ship_channel);
-
-        OrderServices::getInstance()->confirm($this->user->id, $order->id);
-        $order->refresh();
-        $this->assertEquals(2, $order->comments);
-        $this->assertEquals(OrderEnums::STATUS_CONFIRM, $order->order_status);
-
-        OrderServices::getInstance()->delete($this->user->id, $order->id);
-        $this->assertNull(Order::find($order->id));
-    }
-
-    public function testRefundProcess()
-    {
-        $order = $this->getOrder()->refresh();
-        OrderServices::getInstance()->payOrder($order, 'payid_test');
-        $this->assertEquals(OrderEnums::STATUS_PAY, $order->refresh()->order_status);
-        $this->assertEquals('payid_test', $order->pay_id);
-
-        OrderServices::getInstance()->refund($this->user->id, $order->id);
-        $order->refresh();
-        $this->assertEquals(OrderEnums::STATUS_REFUND, $order->order_status);
-
-        OrderServices::getInstance()->agreeRefund($order->refresh(), '微信退款接口', '1234567');
-        $order->refresh();
-        $this->assertEquals(OrderEnums::STATUS_REFUND_CONFIRM, $order->order_status);
-        $this->assertEquals('微信退款接口', $order->refund_type);
-        $this->assertEquals('1234567', $order->refund_content);
-
-        OrderServices::getInstance()->delete($this->user->id, $order->id);
-        $this->assertNull(Order::find($order->id));
-    }
+    // public function testBaseProcess()
+    // {
+    //     $order = $this->getOrder()->refresh();
+    //     OrderServices::getInstance()->payOrder($order, 'payid_test');
+    //     $this->assertEquals(OrderEnums::STATUS_PAY, $order->refresh()->order_status);
+    //     $this->assertEquals('payid_test', $order->pay_id);
+    //
+    //     $shipSn = '1234567';
+    //     $shipChannel = 'shunfeng';
+    //     OrderServices::getInstance()->ship($this->user->id, $order->id, $shipSn, $shipChannel);
+    //     $order->refresh();
+    //     $this->assertEquals(OrderEnums::STATUS_SHIP, $order->order_status);
+    //     $this->assertEquals($shipSn, $order->ship_sn);
+    //     $this->assertEquals($shipChannel, $order->ship_channel);
+    //
+    //     OrderServices::getInstance()->confirm($this->user->id, $order->id);
+    //     $order->refresh();
+    //     $this->assertEquals(2, $order->comments);
+    //     $this->assertEquals(OrderEnums::STATUS_CONFIRM, $order->order_status);
+    //
+    //     OrderServices::getInstance()->delete($this->user->id, $order->id);
+    //     $this->assertNull(Order::find($order->id));
+    // }
+    //
+    // public function testRefundProcess()
+    // {
+    //     $order = $this->getOrder()->refresh();
+    //     OrderServices::getInstance()->payOrder($order, 'payid_test');
+    //     $this->assertEquals(OrderEnums::STATUS_PAY, $order->refresh()->order_status);
+    //     $this->assertEquals('payid_test', $order->pay_id);
+    //
+    //     OrderServices::getInstance()->refund($this->user->id, $order->id);
+    //     $order->refresh();
+    //     $this->assertEquals(OrderEnums::STATUS_REFUND, $order->order_status);
+    //
+    //     OrderServices::getInstance()->agreeRefund($order->refresh(), '微信退款接口', '1234567');
+    //     $order->refresh();
+    //     $this->assertEquals(OrderEnums::STATUS_REFUND_CONFIRM, $order->order_status);
+    //     $this->assertEquals('微信退款接口', $order->refund_type);
+    //     $this->assertEquals('1234567', $order->refund_content);
+    //
+    //     OrderServices::getInstance()->delete($this->user->id, $order->id);
+    //     $this->assertNull(Order::find($order->id));
+    // }
 
     public function testOrderStatusTrait()
     {
