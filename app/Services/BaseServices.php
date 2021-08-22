@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\CodeResponse;
 use App\Exceptions\BusinessException;
 
 class BaseServices

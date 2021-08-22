@@ -198,4 +198,9 @@ class OrderTest extends TestCase
         $this->assertEquals(false, $order->canDeleteHandle());
         $this->assertEquals(false, $order->canConfirmHandle());
     }
+
+    // public function testJob()
+    // {
+    //     OrderUnpaidTimeEndJob::dispatch(1, 2);
+    // }
 }

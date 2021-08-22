@@ -7,6 +7,7 @@ use App\Enums\OrderEnums;
 use App\Exceptions\BusinessException;
 use App\Inputs\OrderSubmitInput;
 use App\Inputs\PageInput;
+use App\Jobs\OrderUnpaidTimeEndJob;
 use App\Models\Goods\GoodsProduct;
 use App\Models\Order\Cart;
 use App\Models\Order\Order;
@@ -20,11 +21,11 @@ use App\Services\Promotion\GrouponServices;
 use App\Services\SystemServices;
 use App\Services\User\AddressServices;
 use App\Services\User\UserServices;
-use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -151,6 +152,7 @@ class OrderServices extends BaseServices
 
         // 设置超时任务
         // dispatch(new OrderUnpaidTimeEndJob($userId, $order->id));
+        OrderUnpaidTimeEndJob::dispatch($userId, $order->id);
 
         return $order;
     }
