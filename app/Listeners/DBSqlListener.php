@@ -29,7 +29,7 @@ class DBSqlListener
         if (!app()->environment(['testing', 'local'])) {
             return;
         }
-        
+
         $sql = $event->sql;
         $bindings = $event->bindings;
         $time = $event->time;
@@ -48,5 +48,9 @@ class DBSqlListener
         $sql = str_replace('?', '%s', $sql);
         $sql = sprintf($sql, ...$bindings);
         Log::info('sql log', ['sql' => $sql, 'time' => $time]);
+
+        if (app()->environment(['testing'])) {
+            echo $sql.PHP_EOL;
+        }
     }
 }

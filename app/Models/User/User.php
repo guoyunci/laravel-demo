@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\BaseModel;
+use Database\Factories\User\UserFactory;
 use Eloquent;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -59,7 +60,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @method static Builder|User whereUsername($value)
  * @method static Builder|User whereWeixinOpenid($value)
  * @mixin Eloquent
- * @method static \Database\Factories\User\UserFactory factory(...$parameters)
+ * @method static UserFactory factory(...$parameters)
  */
 class User extends BaseModel implements JWTSubject, AuthenticatableContract, AuthorizableContract
 {
@@ -75,6 +76,28 @@ class User extends BaseModel implements JWTSubject, AuthenticatableContract, Aut
         'password',
         'deleted'
     ];
+
+    // protected static function booted()
+    // {
+    //     static::casing(function ($user) {
+    //         echo 'casing1'.PHP_EOL;
+    //         return true;
+    //         // return false;
+    //     });
+    //     static::casing(function ($user) {
+    //         echo 'casing2'.PHP_EOL;
+    //         return true;
+    //         // return false;
+    //     });
+    //     static::cased(function ($user) {
+    //         echo 'cased1'.PHP_EOL;
+    //         return true;
+    //     });
+    //     static::cased(function ($user) {
+    //         echo 'cased2'.PHP_EOL;
+    //         return true;
+    //     });
+    // }
 
     /**
      * @return mixed

@@ -73,7 +73,7 @@ Route::get('cart/checkout', [CartController::class, 'checkout']); // 下单前�
 //
 // # 订单模块-订单
 Route::post('order/submit', [OrderController::class, 'submit']); // 提交订单
-// Route::post('order/cancel', 'OrderController@cancel'); //取消订单
+Route::post('order/cancel', [OrderController::class, 'cancel']); //取消订单
 // Route::post('order/refund', 'OrderController@refund'); //退款取消订单
 // Route::post('order/delete', 'OrderController@delete'); //删除订单
 // Route::post('order/confirm', 'OrderController@confirm'); //确认收货

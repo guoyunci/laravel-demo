@@ -282,7 +282,6 @@ class OrderServices extends BaseServices
                 $order->order_status = OrderEnums::STATUS_CANCEL;
         }
 
-        // end_time视频中忘记更新了
         $order->end_time = now()->toDateTimeString();
 
         if ($order->cas() == 0) {
