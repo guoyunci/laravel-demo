@@ -7,6 +7,27 @@ use Exception;
 use Illuminate\Support\Str;
 use ReflectionClass;
 
+/**
+ * Trait OrderStatusTrait
+ * @package App\Models\Order
+ * @method bool canCancelHandle()
+ * @method bool canDeleteHandle()
+ * @method bool canPayHandle()
+ * @method bool canCommentHandle()
+ * @method bool canConfirmHandle()
+ * @method bool canRefundHandle()
+ * @method bool canRebuyHandle()
+ * @method bool canAftersaleHandle()
+ * @method bool isCreateStatus()
+ * @method bool isPayStatus()
+ * @method bool isShipStatus()
+ * @method bool isConfirmStatus()
+ * @method bool isCancelStatus()
+ * @method bool isAutoCancelStatus()
+ * @method bool isRefundStatus()
+ * @method bool isRefundConfirmStatus()
+ * @method bool isAutoConfirmStatus()
+ */
 trait OrderStatusTrait
 {
     private $canHandleMap = [
